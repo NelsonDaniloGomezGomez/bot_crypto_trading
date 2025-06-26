@@ -1,38 +1,308 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+}
+
+/* Contenedor principal */
 .App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.contenedor, .app-container {
+  max-width: 900px;   /* Más ancho */
+  width: 90%;         /* En pantallas chicas se adapta */
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  box-sizing: border-box; /* Por si acaso */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Selector modo */
+.selector-modo {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: transparent; /* Sin fondo llamativo */
+  padding: 4px 8px;
+  font-weight: 500;
+  font-size: 0.875rem; /* Más pequeño */
+  color: inherit; /* Que tome el color del body según modo */
+  z-index: 1000; /* Que quede encima de todo */
+  border-radius: 6px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: none; /* Sin sombra */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.selector-modo label {
+  margin: 0;
+  font-weight: 500;
+}
+
+.selector-modo select {
+  padding: 2px 6px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.selector-modo select:hover,
+.selector-modo select:focus {
+  border-color: #999;
+  outline: none;
+}
+
+/* Formulario */
+.formulario-inicio {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;        /* Centra horizontalmente */
+  justify-content: center;    /* Centra verticalmente si es necesario */
+  gap: 1.2rem;                /* Espacio vertical entre campos */
+  max-width: 400px;
+  margin: 2rem auto;          /* Centra el bloque en la página */
+  padding: 2rem 2.5rem;
+  background-color: #1e2431;  /* Color oscuro elegante, cambia si quieres */
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  color: #cbd5e1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formulario-inicio label {
+  font-weight: 600;
+  font-size: 1rem;
+  align-self: flex-start; /* Labels a la izquierda */
+  margin-bottom: 0.3rem;
+}
+
+.formulario-inicio input[type="text"],
+.formulario-inicio input[type="password"] {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #3a3f58;
+  background-color: #131722;
+  color: #cbd5e1;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.formulario-inicio input[type="text"]:focus,
+.formulario-inicio input[type="password"]:focus {
+  outline: none;
+  border-color: #f0b90b;
+  box-shadow: 0 0 8px #f0b90b;
+}
+
+/* Botón y selects estilos */
+button, select {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* --- 1. Modo Oscuro Elegante --- */
+.App.oscuroElegante {
+  background-color: #131722;
+  color: #cbd5e1;
+}
+
+.App.oscuroElegante .contenedor {
+  background-color: #1e2431;
+  box-shadow: 0 0 10px #0a0f1a;
+}
+
+.App.oscuroElegante input[type="text"],
+.App.oscuroElegante input[type="password"] {
+  background-color: #131722;
+  color: #cbd5e1;
+  border: 1px solid #3a3f58;
+}
+
+.App.oscuroElegante button,
+.App.oscuroElegante select {
+  background-color: #f0b90b;
+  color: #131722;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.App.oscuroElegante button:hover,
+.App.oscuroElegante select:hover {
+  background-color: #d49e0a;
+}
+
+.App.oscuroElegante .tabla-estado {
+  background-color: #131722;
+  color: #cbd5e1;
+  border: 1px solid #3a3f58;
+  box-shadow: inset 0 0 8px #0a0f1a;
+}
+
+.App.oscuroElegante .tabla-estado th {
+  background-color: #22293e;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Ganancia y pérdida: colores */
+.verde {
+  color: #61d991; /* color universal */
+  font-weight: 700;
+}
+
+.rojo {
+  color: #e57373;
+  font-weight: 700;
+}
+
+.App.oscuroElegante .verde {
+  color: #00e676; /* verde neón */
+}
+
+.App.oscuroElegante .rojo {
+  color: #ff5252; /* rojo neón */
+}
+
+/* --- 2. Modo Claro Profesional --- */
+.App.claroProfesional {
+  background-color: #f7fafc;
+  color: #212b36;
+}
+
+.App.claroProfesional .contenedor {
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.App.claroProfesional input[type="text"],
+.App.claroProfesional input[type="password"] {
+  background-color: #fff;
+  color: #212b36;
+  border: 1px solid #cbd5e1;
+}
+
+.App.claroProfesional button,
+.App.claroProfesional select {
+  background-color: #3b82f6;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.App.claroProfesional button:hover,
+.App.claroProfesional select:hover {
+  background-color: #2563eb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.App.claroProfesional .tabla-estado {
+  background-color: #f1f5f9;
+  color: #212b36;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
+}
+
+.App.claroProfesional .tabla-estado th {
+  background-color: #e2e8f0;
+}
+
+/* --- 3. Modo Dual (Claro/Oscuro según hora) --- */
+.App.dual {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Detecta hora y cambia */
+@media (prefers-color-scheme: dark) {
+  .App.dual {
+    background-color: #2a3f44;
+    color: #f0f4f5;
   }
-  to {
-    transform: rotate(360deg);
+  .App.dual .contenedor {
+    background-color: #354e54;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
   }
+  .App.dual input[type="text"],
+  .App.dual input[type="password"] {
+    background-color: #2a3f44;
+    color: #f0f4f5;
+    border: 1px solid #556c71;
+  }
+  .App.dual button,
+  .App.dual select {
+    background-color: #5aa9e6;
+    color: #fff;
+  }
+  .App.dual button:hover,
+  .App.dual select:hover {
+    background-color: #3f7ca3;
+  }
+  .App.dual .tabla-estado {
+    background-color: #2a3f44;
+    color: #f0f4f5;
+    border: 1px solid #4a646a;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  }
+  .App.dual .tabla-estado th {
+    background-color: #3d5a61;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .App.dual {
+    background-color: #f7fafc;
+    color: #212b36;
+  }
+  .App.dual .contenedor {
+    background-color: #ffffff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+  .App.dual input[type="text"],
+  .App.dual input[type="password"] {
+    background-color: #fff;
+    color: #212b36;
+    border: 1px solid #cbd5e1;
+  }
+  .App.dual button,
+  .App.dual select {
+    background-color: #3b82f6;
+    color: white;
+  }
+  .App.dual button:hover,
+  .App.dual select:hover {
+    background-color: #2563eb;
+  }
+  .App.dual .tabla-estado {
+    background-color: #f1f5f9;
+    color: #212b36;
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+  }
+  .App.dual .tabla-estado th {
+    background-color: #e2e8f0;
+  }
+}
+
+/* Mensajes */
+.mensaje, .error-message {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error-message {
+  color: #ff6b6b;
 }

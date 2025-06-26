@@ -26,10 +26,11 @@ class TradingBot:
             'TRXUSDT': {'rsi_sobrecompra': 70, 'rsi_sobreventa': 30},
         }
 
-        self.PORCENTAJE_TAKE = 5.0
-        self.PORCENTAJE_STOP = 2.0
-        self.COMISION = 0.001
-        self.COMISION_TOTAL = self.COMISION * 2
+        # Ajustes de estrategia
+        self.PORCENTAJE_TAKE = 3.5          # Take Profit base (no usado directamente)
+        self.PORCENTAJE_STOP = 2.0          # Trailing Stop % desde el máximo
+        self.COMISION = 0.001               # 0.1% comisión
+        self.COMISION_TOTAL = self.COMISION * 2  # ida y vuelta
         self.INTERVALO = Client.KLINE_INTERVAL_1MINUTE
         self.PERIODO_RSI = 14
 
@@ -43,7 +44,7 @@ class TradingBot:
     def iniciar_log(self):
         try:
             with open(self.ARCHIVO_LOG, 'x') as f:
-                f.write('fecha,simbolo,accion,precio,rsi,cambio_pct,precio_objetivo,precio_actual\n')
+                f.write('fecha,simbolo,accion,precio,rsi,cambio_pct,precio_max,precio_actual\n')
         except FileExistsError:
             pass
 
@@ -52,49 +53,42 @@ class TradingBot:
         for s in info['symbols']:
             simbolo = s['symbol']
             if simbolo in self.CONFIG:
-                lot_size_filter = next(f for f in s['filters'] if f['filterType'] == 'LOT_SIZE')
-                min_notional_filter = next((f for f in s['filters'] if f['filterType'] == 'NOTIONAL'), None)
-                min_notional = float(min_notional_filter['minNotional']) if min_notional_filter else 0.0
+                lot = next(f for f in s['filters'] if f['filterType']=='LOT_SIZE')
+                notional = next((f for f in s['filters'] if f['filterType']=='NOTIONAL'), None)
+                min_not = float(notional['minNotional']) if notional else 0.0
                 self.filtros[simbolo] = {
-                    'minQty': float(lot_size_filter['minQty']),
-                    'stepSize': float(lot_size_filter['stepSize']),
-                    'minNotional': min_notional,
+                    'minQty': float(lot['minQty']),
+                    'stepSize': float(lot['stepSize']),
+                    'minNotional': min_not,
                 }
 
     def cantidad_por_compra(self, precio, simbolo):
         presupuesto = 100 / self.total_simbolos
         step = self.filtros[simbolo]['stepSize']
         min_qty = self.filtros[simbolo]['minQty']
-        min_notional = self.filtros[simbolo]['minNotional']
+        min_not = self.filtros[simbolo]['minNotional']
 
-        cantidad_max = presupuesto / precio
-        cantidad_min_notional = min_notional / precio
-        cantidad_min = max(min_qty, cantidad_min_notional)
-        precision = int(-math.log(step, 10))
-        cantidad_min_ajustada = math.ceil(cantidad_min / step) * step
-        cantidad_min_ajustada = round(cantidad_min_ajustada, precision)
+        max_qty = presupuesto / precio
+        min_not_qty = min_not / precio
+        min_qty = max(min_qty, min_not_qty)
+        prec = int(-math.log(step,10))
+        min_adj = math.ceil(min_qty/step)*step
+        min_adj = round(min_adj, prec)
 
-        if cantidad_max < cantidad_min_ajustada:
+        if max_qty < min_adj:
             return 0
 
-        cantidad_ajustada = math.floor(cantidad_max / step) * step
-        cantidad_ajustada = round(cantidad_ajustada, precision)
+        adj = math.floor(max_qty/step)*step
+        adj = round(adj, prec)
+        return adj if adj>=min_adj else min_adj
 
-        if cantidad_ajustada < cantidad_min_ajustada:
-            cantidad_ajustada = cantidad_min_ajustada
-
-        return cantidad_ajustada
-
-    def registrar_operacion(self, simbolo, accion, precio, rsi, cambio_pct='', precio_objetivo='', precio_actual=''):
-        with open(self.ARCHIVO_LOG, 'a') as f:
-            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')},{simbolo},{accion},{precio},{round(rsi,2)},{round(cambio_pct,2) if cambio_pct != '' else ''},{precio_objetivo},{precio_actual}\n")
+    def registrar_operacion(self, simbolo, accion, precio, rsi, cambio_pct='', precio_max='', precio_actual=''):
+        with open(self.ARCHIVO_LOG,'a') as f:
+            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')},{simbolo},{accion},{precio},{round(rsi,2)},{round(cambio_pct,2) if cambio_pct!='' else ''},{precio_max},{precio_actual}\n")
 
     def obtener_velas(self, simbolo, intervalo, limite=100):
         datos = self.client.get_klines(symbol=simbolo, interval=intervalo, limit=limite)
-        df = pd.DataFrame(datos, columns=[
-            'ts','apertura','max','min','cierre','volumen',
-            'close_time','qav','trades','tbav','tbqav','ignore'
-        ])
+        df = pd.DataFrame(datos, columns=['ts','apertura','max','min','cierre','vol','ct','qav','trades','tbav','tbqav','ignore'])
         df['cierre'] = df['cierre'].astype(float)
         return df
 
@@ -106,35 +100,57 @@ class TradingBot:
         return float(self.client.get_symbol_ticker(symbol=simbolo)['price'])
 
     def guardar_estado(self):
-        with open(self.ARCHIVO_ESTADO, 'w') as f:
-            json.dump(self.estado, f)
+        with open(self.ARCHIVO_ESTADO,'w') as f:
+            json.dump(self.estado, f, indent=2)
 
     def cargar_estado(self):
+        estado = {}
+        # 1) Lee archivo si existe
         if os.path.exists(self.ARCHIVO_ESTADO):
-            with open(self.ARCHIVO_ESTADO, 'r') as f:
-                contenido = f.read().strip()
-                if contenido:
-                    return json.loads(contenido)
+            try:
+                with open(self.ARCHIVO_ESTADO,'r') as f:
+                    contenido = f.read().strip()
+                    if contenido:
+                        estado = json.loads(contenido)
+            except Exception as e:
+                print(f"⚠️ Error leyendo estado: {e}")
 
-        estado_inicial = {
-            simbolo: {'en_posicion': False, 'precio_entrada': 0.0, 'precio_objetivo': 0.0}
-            for simbolo in self.CONFIG
-        }
-        with open(self.ARCHIVO_ESTADO, 'w') as f:
-            json.dump(estado_inicial, f)
+        # 2) Asegura todas las claves de CONFIG con precio_max=0.0
+        for sym in self.CONFIG:
+            if sym not in estado:
+                estado[sym] = {
+                    'en_posicion': False,
+                    'precio_entrada': 0.0,
+                    'precio_max': 0.0   # <-- agregado
+                }
+            else:
+                # si existe pero falta precio_max, lo inyectamos
+                if 'precio_max' not in estado[sym]:
+                    estado[sym]['precio_max'] = 0.0
 
-        return estado_inicial
+        # 3) Guarda sólo para añadir faltantes
+        try:
+            with open(self.ARCHIVO_ESTADO,'w') as f:
+                json.dump(estado, f, indent=2)
+        except Exception as e:
+            print(f"⚠️ Error guardando estado: {e}")
+
+        return estado
 
     def comprar(self, simbolo, rsi):
         precio = self.precio_actual(simbolo)
-        cantidad = self.cantidad_por_compra(precio, simbolo)
-        if cantidad == 0:
+        qty = self.cantidad_por_compra(precio, simbolo)
+        if qty == 0:
             return 0
         try:
-            self.client.order_market_buy(symbol=simbolo, quantity=cantidad)
-            precio_objetivo = precio * (1 + self.PORCENTAJE_TAKE / 100)
-            self.registrar_operacion(simbolo, 'COMPRA', precio, rsi, precio_objetivo=precio_objetivo, precio_actual=precio)
-            self.estado[simbolo] = {'en_posicion': True, 'precio_entrada': precio, 'precio_objetivo': precio_objetivo}
+            self.client.order_market_buy(symbol=simbolo, quantity=qty)
+            # inicializa precio_max para trailing
+            self.estado[simbolo] = {
+                'en_posicion': True,
+                'precio_entrada': precio,
+                'precio_max': precio
+            }
+            self.registrar_operacion(simbolo,'COMPRA',precio,rsi,'', precio,precio)
             self.guardar_estado()
             return precio
         except Exception as e:
@@ -143,14 +159,16 @@ class TradingBot:
 
     def vender(self, simbolo, rsi, precio_entrada):
         precio = self.precio_actual(simbolo)
-        cantidad = self.cantidad_por_compra(precio_entrada, simbolo)
-        if cantidad == 0:
+        qty = self.cantidad_por_compra(precio_entrada, simbolo)
+        if qty == 0:
             return
         try:
-            self.client.order_market_sell(symbol=simbolo, quantity=cantidad)
-            cambio_pct = (precio - precio_entrada) / precio_entrada * 100
-            self.registrar_operacion(simbolo, 'VENTA', precio, rsi, cambio_pct)
-            self.estado[simbolo] = {'en_posicion': False, 'precio_entrada': 0.0, 'precio_objetivo': 0.0}
+            self.client.order_market_sell(symbol=simbolo, quantity=qty)
+            cambio_pct = (precio - precio_entrada)/precio_entrada*100
+            max_price = self.estado[simbolo].get('precio_max','')
+            self.registrar_operacion(simbolo,'VENTA', precio, rsi, cambio_pct, max_price, precio)
+            # cierra posición
+            self.estado[simbolo] = {'en_posicion': False, 'precio_entrada': 0.0, 'precio_max': 0.0}
             self.guardar_estado()
         except Exception as e:
             print(f"Error vendiendo {simbolo}: {e}")
@@ -158,30 +176,58 @@ class TradingBot:
     def run(self):
         while not self.stop_event.is_set():
             try:
-                for simbolo, cfg in self.CONFIG.items():
-                    df = self.calcular_rsi(self.obtener_velas(simbolo, self.INTERVALO))
+                for sym, cfg in self.CONFIG.items():
+                    df = self.calcular_rsi(self.obtener_velas(sym, self.INTERVALO))
                     rsi = df['rsi'].iloc[-1]
-                    precio = self.precio_actual(simbolo)
-                    en_pos = self.estado[simbolo]['en_posicion']
-                    entrada = self.estado[simbolo]['precio_entrada']
+                    precio = self.precio_actual(sym)
+                    en_pos = self.estado[sym]['en_posicion']
+                    entrada = self.estado[sym]['precio_entrada']
 
                     if en_pos:
-                        pct = (precio - entrada) / entrada * 100
-                        if pct >= (self.PORCENTAJE_TAKE + self.COMISION_TOTAL * 100):
-                            self.vender(simbolo, rsi, entrada)
-                        elif pct <= -(self.PORCENTAJE_STOP + self.COMISION_TOTAL * 100):
-                            self.vender(simbolo, rsi, entrada)
+                        # Actualiza máximo
+                        if precio > self.estado[sym]['precio_max']:
+                            self.estado[sym]['precio_max'] = precio
+                            self.guardar_estado()
+
+                        # Calcula trailing stop price
+                        stop_pct = self.PORCENTAJE_STOP + self.COMISION_TOTAL*100
+                        precio_stop = self.estado[sym]['precio_max'] * (1 - stop_pct/100)
+
+                        if precio <= precio_stop:
+                            self.vender(sym, rsi, entrada)
+
                     else:
+                        # Entrada por RSI oversold
                         if rsi < cfg['rsi_sobreventa']:
-                            self.comprar(simbolo, rsi)
+                            self.comprar(sym, rsi)
 
                     if self.stop_event.is_set():
                         break
 
                 time.sleep(60)
+
             except Exception as e:
                 print(f"Error en ciclo principal: {e}")
                 time.sleep(10)
 
     def get_estado(self):
-        return self.estado.copy()
+        estado_completo = {}
+
+        for simbolo, datos in self.estado.items():
+            rsi_actual = None
+            try:
+                # Traemos pocas velas para calcular RSI actual (14 + buffer)
+                df = self.obtener_velas(simbolo, self.INTERVALO, limite=20)
+                df = self.calcular_rsi(df)
+                rsi_actual = round(df['rsi'].iloc[-1], 2)
+            except Exception as e:
+                print(f"⚠️ Error calculando RSI para {simbolo}: {e}")
+
+            estado_completo[simbolo] = {
+                'en_posicion': datos.get('en_posicion', False),
+                'precio_entrada': round(datos.get('precio_entrada', 0.0), 6),
+                'precio_max': round(datos.get('precio_max', 0.0), 6),
+                'rsi': rsi_actual,
+            }
+
+        return estado_completo

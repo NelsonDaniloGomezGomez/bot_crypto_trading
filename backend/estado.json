@@ -1,1 +1,32 @@
-{"ETHUSDT": {"en_posicion": true, "precio_entrada": 2438.64, "precio_objetivo": 2560.572}, "ADAUSDT": {"en_posicion": true, "precio_entrada": 0.5825, "precio_objetivo": 0.6116250000000001}, "SOLUSDT": {"en_posicion": true, "precio_entrada": 144.87, "precio_objetivo": 152.11350000000002}, "BNBUSDT": {"en_posicion": false, "precio_entrada": 0.0, "precio_objetivo": 0.0}, "XRPUSDT": {"en_posicion": false, "precio_entrada": 0.0, "precio_objetivo": 0.0}, "TRXUSDT": {"en_posicion": false, "precio_entrada": 0.0, "precio_objetivo": 0.0}}
+{
+  "ETHUSDT": {
+    "en_posicion": false,
+    "precio_entrada": 0.0,
+    "precio_max": 0.0
+  },
+  "ADAUSDT": {
+    "en_posicion": true,
+    "precio_entrada": 0.5713,
+    "precio_max": 0.5723
+  },
+  "SOLUSDT": {
+    "en_posicion": true,
+    "precio_entrada": 145.58,
+    "precio_max": 145.63
+  },
+  "BNBUSDT": {
+    "en_posicion": false,
+    "precio_entrada": 0.0,
+    "precio_max": 0.0
+  },
+  "XRPUSDT": {
+    "en_posicion": false,
+    "precio_entrada": 0.0,
+    "precio_max": 0.0
+  },
+  "TRXUSDT": {
+    "en_posicion": true,
+    "precio_entrada": 0.274,
+    "precio_max": 0.274
+  }
+}
