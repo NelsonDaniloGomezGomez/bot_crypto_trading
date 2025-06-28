@@ -7,13 +7,13 @@ import TablaEstadoBot from "./components/TablaEstadoBot";
 import PreciosActuales from "./components/PreciosActuales";
 import ResumenGanancia from "./components/ResumenGanancia";
 import HistorialOperaciones from "./components/HistorialOperaciones";
+import GraficoConTradingView from "./components/GraficoConTradingView";
 
 import "./App.css";
 
 const MODOS = [
   { id: "oscuroElegante", nombre: "Oscuro Elegante" },
-  { id: "claroProfesional", nombre: "Claro Profesional" },
-  { id: "dual", nombre: "Modo Dual" },
+  { id: "claroProfesional", nombre: "Claro Profesional" }
 ];
 
 function App() {
@@ -21,6 +21,12 @@ function App() {
   const [mensaje, setMensaje] = useState("");
   const [precios, setPrecios] = useState({});
   const [modo, setModo] = useState("oscuroElegante");
+  const monedasDisponibles = ["ETHUSDT", "ADAUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "TRXUSDT"]; // Puedes extender esto
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState("ETHUSDT");
+
+  const handleMonedaChange = (e) => {
+    setMonedaSeleccionada(e.target.value);
+  };
 
   useEffect(() => {
     const modoGuardado = localStorage.getItem("modo") || "oscuroElegante";
@@ -85,6 +91,17 @@ function App() {
         {mensaje && <p className="mensaje">{mensaje}</p>}
         <PreciosActuales precios={precios} />
         <ResumenGanancia estado={estado} preciosActuales={precios} />
+        <div className="selector-moneda">
+          <label htmlFor="moneda">Moneda: </label>
+          <select id="moneda" value={monedaSeleccionada} onChange={handleMonedaChange}>
+            {monedasDisponibles.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
+        <GraficoConTradingView moneda={monedaSeleccionada} modo={modo}/>
         <TablaEstadoBot estado={estado} preciosActuales={precios} />
         <HistorialOperaciones />
       </div>

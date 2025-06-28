@@ -5,6 +5,7 @@ import json  # <- ¡IMPORTANTE!
 import requests
 from bot_logic import TradingBot 
 import csv
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -105,5 +106,100 @@ def history():
         pass  # Si el archivo no existe, devolvemos lista vacía
     return jsonify(registros)
 
+@app.route('/estadisticas')
+def obtener_estadisticas():
+    try:
+        # Cargar el archivo de historial de operaciones
+        df = pd.read_csv('logs.csv')
+
+        # Asegurar que la columna fecha sea tipo datetime
+        df['fecha'] = pd.to_datetime(df['fecha'])
+
+        # Filtrar solo las ventas que tienen cambio_pct
+        df_ventas = df[df['accion'] == 'VENTA'].copy()
+        df_ventas = df_ventas.dropna(subset=['cambio_pct'])
+
+        total = len(df_ventas)
+        ganadas = df_ventas[df_ventas['cambio_pct'] > 0].shape[0]
+        perdidas = df_ventas[df_ventas['cambio_pct'] < 0].shape[0]
+        porcentaje_aciertos = round((ganadas / total) * 100, 2) if total > 0 else 0
+        roi_total = round(df_ventas['cambio_pct'].sum(), 2)
+
+        ganancia_usd = 0
+        perdida_usd = 0
+        duraciones_minutos = []
+
+        # Calcular diferencia de precios y duración entre compra y venta
+        for _, venta in df_ventas.iterrows():
+            simbolo = venta['simbolo']
+
+            # Buscar la última compra anterior a esta venta
+            df_compras = df[
+                (df['simbolo'] == simbolo) &
+                (df['accion'] == 'COMPRA') &
+                (df['fecha'] < venta['fecha'])
+            ]
+
+            if not df_compras.empty:
+                compra = df_compras.iloc[-1]
+                cantidad = 1  # Se puede cambiar si se registra la cantidad real
+                diferencia = (venta['precio'] - compra['precio']) * cantidad
+
+                if diferencia > 0:
+                    ganancia_usd += diferencia
+                else:
+                    perdida_usd += diferencia
+
+                # Calcular duración en minutos
+                duracion = (venta['fecha'] - compra['fecha']).total_seconds() / 60
+                duraciones_minutos.append(duracion)
+
+        # Calcular duración promedio si hay datos
+        if duraciones_minutos:
+            promedio_duracion = round(sum(duraciones_minutos) / len(duraciones_minutos), 2)
+        else:
+            promedio_duracion = 0
+
+        resultado = {
+            "total_operaciones": total,
+            "operaciones_ganadas": ganadas,
+            "operaciones_perdidas": perdidas,
+            "porcentaje_aciertos": porcentaje_aciertos,
+            "retorno_total_porcentual": roi_total,
+            "ganancia_estimada_usd": round(ganancia_usd, 2),
+            "perdida_estimada_usd": round(perdida_usd, 2),
+            "duracion_promedio_minutos": promedio_duracion
+        }
+
+        return jsonify(resultado)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/velas", methods=["GET"])
+def obtener_velas():
+    symbol = request.args.get("symbol", "ETHUSDT")
+    interval = request.args.get("interval", "1h")
+
+    try:
+        response = requests.get(
+            f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit=100"
+        )
+        data = response.json()
+        velas = [
+            {
+                "time": item[0],
+                "open": float(item[1]),
+                "high": float(item[2]),
+                "low": float(item[3]),
+                "close": float(item[4]),
+                "volume": float(item[5]),
+            }
+            for item in data
+        ]
+        return jsonify(velas)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+              
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,9 +1,48 @@
-/* Reset básico */
+/* ================== RESET ================== */
 * {
   box-sizing: border-box;
 }
 
-/* Contenedor principal */
+/*-------------------- Encabezado ------------------*/
+.encabezado {
+  width: 100%;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  margin-bottom: 2rem;
+}
+
+.encabezado h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* === Modo Oscuro Elegante === */
+.App.oscuroElegante .encabezado {
+  background-color: #1a1f2d;
+  color: #f1f5f9;
+  border-bottom: 1px solid #2e3448;
+}
+
+.App.oscuroElegante .encabezado h1 {
+  color: #f0b90b;
+}
+
+/* === Modo Claro Profesional === */
+.App.claroProfesional .encabezado {
+  background-color: #f0f2f5;
+  color: #212b36;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.App.claroProfesional .encabezado h1 {
+  color: #3b82f6;
+}
+
+
+/* ================== ESTRUCTURA ================== */
 .App {
   display: flex;
   justify-content: center;
@@ -14,32 +53,32 @@
 }
 
 .contenedor, .app-container {
-  max-width: 900px;   /* Más ancho */
-  width: 90%;         /* En pantallas chicas se adapta */
+  max-width: 900px;
+  width: 90%;
   margin: 2rem auto;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-  box-sizing: border-box; /* Por si acaso */
+  box-sizing: border-box;
 }
 
-/* Selector modo */
+/* ================== SELECTOR MODO ================== */
 .selector-modo {
   position: fixed;
   top: 10px;
   right: 10px;
-  background: transparent; /* Sin fondo llamativo */
+  background: transparent;
   padding: 4px 8px;
   font-weight: 500;
-  font-size: 0.875rem; /* Más pequeño */
-  color: inherit; /* Que tome el color del body según modo */
-  z-index: 1000; /* Que quede encima de todo */
+  font-size: 0.875rem;
+  color: inherit;
+  z-index: 1000;
   border-radius: 6px;
   user-select: none;
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: none; /* Sin sombra */
+  box-shadow: none;
 }
 
 .selector-modo label {
@@ -64,17 +103,17 @@
   outline: none;
 }
 
-/* Formulario */
+/* ================== FORMULARIO ================== */
 .formulario-inicio {
   display: flex;
   flex-direction: column;
-  align-items: center;        /* Centra horizontalmente */
-  justify-content: center;    /* Centra verticalmente si es necesario */
-  gap: 1.2rem;                /* Espacio vertical entre campos */
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
   max-width: 400px;
-  margin: 2rem auto;          /* Centra el bloque en la página */
+  margin: 2rem auto;
   padding: 2rem 2.5rem;
-  background-color: #1e2431;  /* Color oscuro elegante, cambia si quieres */
+  background-color: #1e2431;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   color: #cbd5e1;
@@ -84,7 +123,7 @@
 .formulario-inicio label {
   font-weight: 600;
   font-size: 1rem;
-  align-self: flex-start; /* Labels a la izquierda */
+  align-self: flex-start;
   margin-bottom: 0.3rem;
 }
 
@@ -107,7 +146,32 @@
   box-shadow: 0 0 8px #f0b90b;
 }
 
-/* Botón y selects estilos */
+/* === Modo Claro Profesional: formulario inicio === */
+.App.claroProfesional .formulario-inicio {
+  background-color: #f5f7fa;
+  color: #212b36;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #d1d5db;
+}
+
+.App.claroProfesional .formulario-inicio label {
+  color: #374151;
+}
+
+.App.claroProfesional .formulario-inicio input[type="text"],
+.App.claroProfesional .formulario-inicio input[type="password"] {
+  background-color: #ffffff;
+  color: #212b36;
+  border: 1px solid #cbd5e1;
+}
+
+.App.claroProfesional .formulario-inicio input[type="text"]:focus,
+.App.claroProfesional .formulario-inicio input[type="password"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+/* ================== BOTONES Y SELECTS ================== */
 button, select {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -117,7 +181,39 @@ button, select {
   transition: background-color 0.3s ease;
 }
 
-/* --- 1. Modo Oscuro Elegante --- */
+/* ================== MENSAJES ================== */
+.mensaje, .error-message {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error-message {
+  color: #ff6b6b;
+}
+
+/* ================== COLORES REUSABLES ================== */
+.verde, .porcentaje-verde {
+  color: #00e676;
+  font-weight: 700;
+}
+
+.rojo, .porcentaje-rojo {
+  color: #ff5252;
+  font-weight: 700;
+}
+
+.tag-posicion {
+  font-weight: bold;
+  color: #00ffc8;
+}
+
+.tag-fuera {
+  color: #888;
+  font-style: italic;
+}
+
+/* ================== MODO OSCURO ELEGANTE ================== */
 .App.oscuroElegante {
   background-color: #131722;
   color: #cbd5e1;
@@ -161,41 +257,22 @@ button, select {
   letter-spacing: 0.5px;
 }
 
-/* Ganancia y pérdida: colores */
-.verde {
-  color: #61d991; /* color universal */
-  font-weight: 700;
-}
-
-.rojo {
-  color: #e57373;
-  font-weight: 700;
-}
-
-.App.oscuroElegante .verde {
-  color: #00e676; /* verde neón */
-}
-
-.App.oscuroElegante .rojo {
-  color: #ff5252; /* rojo neón */
-}
-
-/* --- 2. Modo Claro Profesional --- */
+/* ================== MODO CLARO PROFESIONAL ================== */
 .App.claroProfesional {
-  background-color: #f7fafc;
+  background-color: #e0e3e7;
   color: #212b36;
 }
 
 .App.claroProfesional .contenedor {
-  background-color: #ffffff;
+  background-color: #f5f7fa;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
 .App.claroProfesional input[type="text"],
 .App.claroProfesional input[type="password"] {
-  background-color: #fff;
+  background-color: #f0f0f5;
   color: #212b36;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #c0c0c8;
 }
 
 .App.claroProfesional button,
@@ -210,99 +287,305 @@ button, select {
 }
 
 .App.claroProfesional .tabla-estado {
-  background-color: #f1f5f9;
+  background-color: #f7f7fa;
   color: #212b36;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #c0c0c8;
   box-shadow: none;
 }
 
 .App.claroProfesional .tabla-estado th {
-  background-color: #e2e8f0;
+  background-color: #d0d0d8;
+  color: #212b36;
 }
 
-/* --- 3. Modo Dual (Claro/Oscuro según hora) --- */
-.App.dual {
-  transition: background-color 0.5s ease, color 0.5s ease;
+/* ================== TARJETA ESTADÍSTICAS ================== */
+.tarjeta-estadistica {
+  background-color: #1e1e2f;
+  color: #ffffff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin: 1rem auto;
+  box-shadow: 0 0 10px rgba(0, 255, 150, 0.05);
+  max-width: 600px;
+  text-align: left;
+  font-family: 'Roboto Mono', monospace;
 }
 
-/* Detecta hora y cambia */
-@media (prefers-color-scheme: dark) {
-  .App.dual {
-    background-color: #2a3f44;
-    color: #f0f4f5;
-  }
-  .App.dual .contenedor {
-    background-color: #354e54;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-  }
-  .App.dual input[type="text"],
-  .App.dual input[type="password"] {
-    background-color: #2a3f44;
-    color: #f0f4f5;
-    border: 1px solid #556c71;
-  }
-  .App.dual button,
-  .App.dual select {
-    background-color: #5aa9e6;
-    color: #fff;
-  }
-  .App.dual button:hover,
-  .App.dual select:hover {
-    background-color: #3f7ca3;
-  }
-  .App.dual .tabla-estado {
-    background-color: #2a3f44;
-    color: #f0f4f5;
-    border: 1px solid #4a646a;
-    box-shadow: 0 0 8px rgba(0,0,0,0.3);
-  }
-  .App.dual .tabla-estado th {
-    background-color: #3d5a61;
-  }
+.tarjeta-estadistica h3 {
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #41917f;
 }
 
-@media (prefers-color-scheme: light) {
-  .App.dual {
-    background-color: #f7fafc;
-    color: #212b36;
-  }
-  .App.dual .contenedor {
-    background-color: #ffffff;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  }
-  .App.dual input[type="text"],
-  .App.dual input[type="password"] {
-    background-color: #fff;
-    color: #212b36;
-    border: 1px solid #cbd5e1;
-  }
-  .App.dual button,
-  .App.dual select {
-    background-color: #3b82f6;
-    color: white;
-  }
-  .App.dual button:hover,
-  .App.dual select:hover {
-    background-color: #2563eb;
-  }
-  .App.dual .tabla-estado {
-    background-color: #f1f5f9;
-    color: #212b36;
-    border: 1px solid #cbd5e1;
-    box-shadow: none;
-  }
-  .App.dual .tabla-estado th {
-    background-color: #e2e8f0;
-  }
+.tarjeta-estadistica p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
 }
 
-/* Mensajes */
-.mensaje, .error-message {
-  margin-top: 20px;
+.valor-verde {
+  color: #00e676;
+}
+
+.valor-rojo {
+  color: #ff5252;
+}
+
+.valor-neutro {
+  color: #212b36;
+}
+
+.valor-destacado {
   font-weight: bold;
-  text-align: center;
+  font-size: 1.05rem;
 }
 
-.error-message {
-  color: #ff6b6b;
+/* Tarjeta - Claro Profesional */
+.App.claroProfesional .tarjeta-estadistica {
+  background-color: #f5f7fa;
+  color: #212b36;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.36);
+}
+
+.App.claroProfesional .tarjeta-estadistica h3 {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #37474f;
+}
+
+.App.claroProfesional .valor-verde {
+  color: #2e7d32;
+}
+
+.App.claroProfesional .valor-rojo {
+  color: #c62828;
+}
+
+.App.claroProfesional .valor-neutro {
+  color: #455a64;
+}
+
+.App.claroProfesional .valor-destacado {
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+/* ================== TABLA ESTADO GENERAL ================== */
+.tabla-estado {
+  width: 100%;
+  max-width: 900px;
+  margin: 1rem auto;
+  border-collapse: collapse;
+  font-family: 'Roboto Mono', monospace;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  border: 1px solid #999;
+}
+
+.tabla-estado th {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  background-color: #c8c8d0;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #999;
+}
+
+.tabla-estado td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #999;
+}
+
+.tabla-estado tr:last-child td {
+  border-bottom: none;
+}
+
+.porcentaje-verde {
+  color: #00a000;
+  font-weight: bold;
+}
+
+.porcentaje-rojo {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.tag-posicion {
+  font-weight: bold;
+  color: #007acc;
+}
+
+.tag-fuera {
+  color: #888;
+  font-style: italic;
+}
+
+/* ===== Estilo General BotonesControl ===== */
+.botones-control {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* ===== Estilo grupo de botones ===== */
+.grupo-botones {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ===== Botones modernos ===== */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn.iniciar {
+  background-color: #10b981;
+  color: #fff;
+}
+
+.btn.iniciar:hover {
+  background-color: #059669;
+  transform: scale(1.03);
+}
+
+.btn.detener {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.btn.detener:hover {
+  background-color: #dc2626;
+  transform: scale(1.03);
+}
+
+/* ===== Testnet toggle moderno ===== */
+.grupo-testnet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switch-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch-label input {
+  display: none;
+}
+
+.slider {
+  width: 42px;
+  height: 22px;
+  background-color: #ccc;
+  border-radius: 999px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+input:checked + .slider {
+  background-color: #3b82f6;
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.etiqueta-switch {
+  margin-left: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* === Botones base === */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* === Modo Claro Profesional === */
+.App.claroProfesional .btn.iniciar {
+  background-color: #5c87b2;  /* azul grisáceo suave */
+  color: #ffffff;
+}
+
+.App.claroProfesional .btn.iniciar:hover {
+  background-color: #4a7198;
+  transform: scale(1.02);
+}
+
+.App.claroProfesional .btn.detener {
+  background-color: #b85c5c;  /* rojo apagado */
+  color: #ffffff;
+}
+
+.App.claroProfesional .btn.detener:hover {
+  background-color: #a94b4b;
+  transform: scale(1.02);
+}
+
+/* === Modo Oscuro Elegante === */
+.App.oscuroElegante .btn.iniciar {
+  background-color: #3b506a;  /* azul gris oscuro */
+  color: #e0e3e7;
+}
+
+.App.oscuroElegante .btn.iniciar:hover {
+  background-color: #32455b;
+  transform: scale(1.02);
+}
+
+.App.oscuroElegante .btn.detener {
+  background-color: #6a3b3b;  /* rojo oscuro suave */
+  color: #e0e3e7;
+}
+
+.App.oscuroElegante .btn.detener:hover {
+  background-color: #5b3232;
+  transform: scale(1.02);
+}
+
+.grafico-tradingview-contenedor {
+  width: 100%;
+  height: 500px;          /* altura fija, ajusta si quieres */
+  background-color: var(--bg-grafico, #131722); /* color de fondo por defecto */
+  border-radius: 12px;    /* bordes suaves */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* sombra para darle profundidad */
+  overflow: hidden;       /* evita que el contenido se salga */
 }

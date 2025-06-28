@@ -6,23 +6,23 @@
   },
   "ADAUSDT": {
     "en_posicion": true,
-    "precio_entrada": 0.5713,
-    "precio_max": 0.5723
+    "precio_entrada": 0.5587,
+    "precio_max": 0.5603
   },
   "SOLUSDT": {
     "en_posicion": true,
-    "precio_entrada": 145.58,
-    "precio_max": 145.63
+    "precio_entrada": 143.12,
+    "precio_max": 143.68
   },
   "BNBUSDT": {
-    "en_posicion": false,
-    "precio_entrada": 0.0,
-    "precio_max": 0.0
+    "en_posicion": true,
+    "precio_entrada": 644.32,
+    "precio_max": 645.28
   },
   "XRPUSDT": {
-    "en_posicion": false,
-    "precio_entrada": 0.0,
-    "precio_max": 0.0
+    "en_posicion": true,
+    "precio_entrada": 2.1782,
+    "precio_max": 2.1857
   },
   "TRXUSDT": {
     "en_posicion": true,
