@@ -23,6 +23,7 @@ function App() {
   const [modo, setModo] = useState("oscuroElegante");
   const monedasDisponibles = ["ETHUSDT", "ADAUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "TRXUSDT"]; // Puedes extender esto
   const [monedaSeleccionada, setMonedaSeleccionada] = useState("ETHUSDT");
+  const [indicador, setIndicador] = useState("RSI");
 
   const handleMonedaChange = (e) => {
     setMonedaSeleccionada(e.target.value);
@@ -101,7 +102,23 @@ function App() {
             ))}
           </select>
         </div>
-        <GraficoConTradingView moneda={monedaSeleccionada} modo={modo}/>
+
+        <div className="selector-indicador">
+          <label htmlFor="indicador-select">Indicador: </label>
+          <select
+            id="indicador-select"
+            value={indicador}
+            onChange={(e) => setIndicador(e.target.value)}
+          >
+            <option value="RSI">RSI</option>
+            <option value="EMA">Media Móvil (EMA)</option>
+            <option value="SMA">Media Móvil Simple (SMA)</option>
+            <option value="MACD">MACD</option>
+            <option value="Bollinger">Bandas de Bollinger</option>
+          </select>
+        </div>
+
+        <GraficoConTradingView moneda={monedaSeleccionada} modo={modo} indicador={indicador}/>
         <TablaEstadoBot estado={estado} preciosActuales={precios} />
         <HistorialOperaciones />
       </div>
